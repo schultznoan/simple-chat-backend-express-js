@@ -1,12 +1,14 @@
-import express = require('express')
-import mongoose = require('mongoose')
-import dotenv = require('dotenv')
+import express from 'express'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+import router from './router'
 
 dotenv.config()
 
 const app = express()
 
 app.use(express.json())
+app.use(router)
 
 const init = async () => {
   try {
