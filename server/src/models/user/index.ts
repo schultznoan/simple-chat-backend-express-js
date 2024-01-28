@@ -10,10 +10,6 @@ export default model('User', new Schema({
     required: true,
     unique: true
   },
-  password: {
-    type: String,
-    required: true
-  },
   online: {
     type: Boolean,
     default: false

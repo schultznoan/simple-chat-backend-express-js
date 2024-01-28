@@ -1,10 +1,12 @@
 import ApiError from '../../exceptions/error/index'
 import {
   Request,
-  Response
+  Response,
+  NextFunction
 } from 'express'
 
-export default function (error: ApiError, _req: Request, res: Response) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function (error: ApiError, _req: Request, res: Response, _next: NextFunction) {
   const { status, message, errors } = error
 
   if (error instanceof ApiError) {
