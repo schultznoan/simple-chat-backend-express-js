@@ -9,9 +9,5 @@ export default model('User', new Schema({
     type: String,
     required: true,
     unique: true
-  },
-  online: {
-    type: Boolean,
-    default: false
   }
 }))

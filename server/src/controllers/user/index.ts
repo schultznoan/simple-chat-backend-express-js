@@ -14,4 +14,12 @@ export default new class UserController {
       next(error)
     }
   }
+
+  async signin (req: Request, res: Response, next: NextFunction) {
+    try {
+      return res.json(await UserService.signin(req.body || {}))
+    } catch (error) {
+      next(error)
+    }
+  }
 }

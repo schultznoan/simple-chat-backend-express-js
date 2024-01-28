@@ -9,10 +9,5 @@ export default model('UserIdentification', new Schema({
   password: {
     type: String,
     required: true
-  },
-  refreshToken: {
-    type: String,
-    unique: true,
-    reqyured: true
   }
 }))

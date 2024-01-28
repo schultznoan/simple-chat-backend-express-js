@@ -6,7 +6,7 @@ const router = Router()
 router.get('/user')
 router.get('/user/:identification')
 router.get('/user/auth/refresh')
-router.post('/user/auth/signin')
+router.post('/user/auth/signin', UserController.signin)
 router.post('/user/auth/signup', UserController.signup)
 
 router.get('/chat/dialog')
