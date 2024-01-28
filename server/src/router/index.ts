@@ -5,9 +5,9 @@ const router = Router()
 
 router.get('/user')
 router.get('/user/:identification')
-router.get('/user/refresh')
-router.post('/user/signin')
-router.post('/user/signup', UserController.signup)
+router.get('/user/auth/refresh')
+router.post('/user/auth/signin')
+router.post('/user/auth/signup', UserController.signup)
 
 router.get('/chat/dialog')
 router.get('/chat/dialog/:id')

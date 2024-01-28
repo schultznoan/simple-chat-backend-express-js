@@ -9,6 +9,8 @@ import {
 export default function (error: ApiError, _req: Request, res: Response, _next: NextFunction) {
   const { status, message, errors } = error
 
+  console.error(error)
+
   if (error instanceof ApiError) {
     return res
       .status(status)

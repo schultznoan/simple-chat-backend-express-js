@@ -1,10 +1,10 @@
-import bcrypt from 'bcrypt'
-
 import { validateForm } from '../../lib/validate/index'
 
 import ApiError from '../../exceptions/error/index'
 
 import UserModel from '../../models/user/index'
+
+import UserIdentificationService from './identification'
 
 export default new class UserService {
   async signup ({ fio, email, password }) {
@@ -16,16 +16,16 @@ export default new class UserService {
 
     const findedUser = await UserModel.findOne({ email })
 
-    if (!findedUser) {
+    if (findedUser) {
       throw ApiError.BadRequest('Пользователь с таким e-mail уже зарегистрирован')
     }
 
-    const user = await UserModel.create({
-      fio,
-      email,
-      password: await bcrypt.hash(password, 3)
-    })
+    try {
+      const { _id: id } = await UserModel.create({ fio, email })
 
-    return user
+      return await UserIdentificationService.save({ id, fio, email, password })
+    } catch (error) {
+      throw ApiError.BadRequest('Произошла ошибка при регистрации пользователя')
+    }
   }
 }
