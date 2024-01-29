@@ -27,8 +27,8 @@ export default new class UserIdentificationService {
         access,
         refresh
       }
-    } catch (error) {
-      throw ApiError.BadRequest('Произошла ошибка при регистрации пользователя')
+    } catch ({ message }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при регистрации пользователя')
     }
   }
 
@@ -41,16 +41,16 @@ export default new class UserIdentificationService {
       }
 
       return new UserIdentificationDto(userIdentification)?.password
-    } catch (error) {
-      throw ApiError.BadRequest('Произошла ошибка при получении пароля')
+    } catch ({ message }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при получении пароля')
     }
   }
 
   async comparePasswords ({ userId, currentPassword }) {
     try {
-      return await bcrypt.compare(currentPassword, await this.getPassword(userId));
-    } catch (error) {
-      throw ApiError.BadRequest('Произошла ошибка при сравнивании пароля')
+      return await bcrypt.compare(currentPassword, await this.getPassword(userId))
+    } catch ({ message }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при сравнивании пароля')
     }
   }
 }

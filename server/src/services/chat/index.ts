@@ -6,6 +6,8 @@ import MessageModel from '../../models/message/index'
 import ChatDialogDto from '../../dtos/dialog/index'
 import MessageDialogDto from '../../dtos/message/index'
 
+import { validateForm } from '../../lib/validate/index'
+
 export default new class ChatService {
   async findDialog ({ dialogId, companionId, userId }) {
     try {
@@ -18,20 +20,18 @@ export default new class ChatService {
       const createdDialog = await DialogModel.create({ userId, companionId })
 
       return new ChatDialogDto(createdDialog)
-    } catch (error) {
-      throw ApiError.BadRequest(error?.message || 'Произошла ошибка при получении диалога')
+    } catch ({ message }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при получении диалога')
     }
   }
   
   async createMessage ({ userId, companionId, dialogId, text, isIncomingMessage = false }) {
     try {
-    //   if (!dialogId) {
-    //     throw ApiError.BadRequest('Некорректный запрос', { dialogId: 'Обязательное поле' })
-    //   }
+      const errors = validateForm({ companionId, dialogId, text })
 
-    //   if (!text) {
-    //     throw ApiError.BadRequest('Некорректный запрос', { text: 'Текст сообщения не может быть пустым' })
-    //   }
+      if (errors) {
+        throw ApiError.BadRequest('Некорректный запрос', errors)
+      }
 
       const dialog = await this.findDialog({ userId, companionId, dialogId })
 
@@ -43,8 +43,8 @@ export default new class ChatService {
       })
 
       return new MessageDialogDto(message)
-    } catch (error) {
-      throw ApiError.BadRequest(error?.message || 'Произошла ошибка при создании сообщения')
+    } catch ({ message, errors }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при создании сообщения', errors)
     }
   }
 
@@ -55,8 +55,8 @@ export default new class ChatService {
       }
   
       return await DialogModel.find()
-    } catch (error) {
-      throw ApiError.BadRequest(error?.message || 'Произошла ошибка при получении списка диалогов')
+    } catch ({ message }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при получении списка диалогов')
     }
   }
 }

@@ -10,6 +10,18 @@ const validatationCompliance = {
   password: {
     func: validatePassword,
     errorMessage: 'Пароль должен быть не менее 6 символов'
+  },
+  companionId: {
+    func: validateEmpty,
+    errorMessage: 'Обязательное поле'
+  },
+  dialogId: {
+    func: validateEmpty,
+    errorMessage: 'Обязательное поле'
+  },
+  text: {
+    func: validateEmpty,
+    errorMessage: 'Текст сообщения не может быть пустым'
   }
 }
 
@@ -23,6 +35,10 @@ export function validateEmail (email: string): boolean {
 
 export function validatePassword (password: string): boolean {
   return password?.length >= 6
+}
+
+export function validateEmpty (value: unknown): boolean {
+  return !!value
 }
 
 export function validateForm (form) {

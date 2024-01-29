@@ -19,6 +19,7 @@ export default class ApiError extends Error {
   }
 
   static BadRequest (message: string, errors: ErrorType = {}): Error {
+    console.log(errors)
     return new ApiError(StatusCodes.BAD_REQUEST, message, errors)
   }
 }
