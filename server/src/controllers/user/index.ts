@@ -9,7 +9,12 @@ import UserService from '../../services/user/index'
 export default new class UserController {
   async signup (req: Request, res: Response, next: NextFunction) {
     try {
-      return res.json(await UserService.signup(req.body || {}))
+      const userData = await UserService.signup(req.body || {})
+
+      res.cookie('access_token', userData.access, { maxAge: +process.env.JWT_ACCESS_MAX_AGE, httpOnly: true })
+      res.cookie('refresh_token', userData.refresh, { maxAge: +process.env.JWT_REFRESH_MAX_AGE, httpOnly: true })
+    
+      return res.json(userData)
     } catch (error) {
       next(error)
     }
@@ -17,7 +22,12 @@ export default new class UserController {
 
   async signin (req: Request, res: Response, next: NextFunction) {
     try {
-      return res.json(await UserService.signin(req.body || {}))
+      const userData = await UserService.signin(req.body || {})
+
+      res.cookie('access_token', userData.access, { maxAge: +process.env.JWT_ACCESS_MAX_AGE, httpOnly: true })
+      res.cookie('refresh_token', userData.refresh, { maxAge: +process.env.JWT_REFRESH_MAX_AGE, httpOnly: true })
+
+      return res.json(userData) 
     } catch (error) {
       next(error)
     }
