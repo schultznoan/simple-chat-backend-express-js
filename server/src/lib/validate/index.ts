@@ -41,7 +41,7 @@ export function validateEmpty (value: unknown): boolean {
   return !!value
 }
 
-export function validateForm (form) {
+export function validateForm (form: Record<string, unknown>): Record<string, string> {
   const errors = {}
 
   for (const key in form) {

@@ -101,7 +101,7 @@ export default new class UserService {
         throw ApiError.UnauthorizedError()
       }
   
-      const userData: Record<string, unknown> = UserTokensService.validateToken(refreshToken, false)
+      const userData = UserTokensService.validateToken(refreshToken, false)
   
       if (!userData) {
         throw ApiError.UnauthorizedError()

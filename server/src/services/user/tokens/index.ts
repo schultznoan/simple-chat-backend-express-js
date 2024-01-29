@@ -6,8 +6,6 @@ import {
   TokensResponse
 } from './interface'
 
-import UserDto from '../../../dtos/user/index'
-
 export default new class UserTokensService {
   generateTokens (payload: Record<string, unknown>): TokensResponse {
     return {
@@ -20,7 +18,7 @@ export default new class UserTokensService {
     }
   }
 
-  validateToken (token: string, isAccess: boolean = true): Record<string, unknown> {
+  validateToken (token: string, isAccess: boolean = true) {
     try {
       return jwt.verify(token, isAccess ? process.env.JWT_ACCESS_SECRET : process.env.JWT_REFRESH_SECRET)
     } catch (error) {
