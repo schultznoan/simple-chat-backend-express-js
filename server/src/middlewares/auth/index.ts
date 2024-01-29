@@ -17,19 +17,28 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export default function (req: Request, _res: Response, next: NextFunction) {
+function errorHandler (res: Response, next: NextFunction) {
+  res.clearCookie('access_token')
+  res.clearCookie('refresh_token')
+
+  next(ApiError.UnauthorizedError())
+}
+
+export default function (req: Request, res: Response, next: NextFunction) {
   try {
     const authorizationHeader = req.headers.authorization
 
     if (!authorizationHeader) {
-      next(ApiError.UnauthorizedError())
+      errorHandler(res, next)
+
       return
     }
 
     const accessToken = authorizationHeader.split(' ')?.[1] || ''
 
     if (!accessToken) {
-      next(ApiError.UnauthorizedError())
+      errorHandler(res, next)
+
       return
     }
 
@@ -39,6 +48,6 @@ export default function (req: Request, _res: Response, next: NextFunction) {
 
     next()
   } catch {
-    next(ApiError.UnauthorizedError());
+    errorHandler(res, next)
   }
 }
