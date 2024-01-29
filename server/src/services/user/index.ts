@@ -55,4 +55,18 @@ export default new class UserService {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при авторизации пользователя')
     }
   }
+
+  async getUsers (query: string) {
+    try {
+      if (query) {
+        return await UserModel
+          .find({ fio: new RegExp(query, 'i') })
+          .sort({ fio: 1 })
+      }
+  
+      return await UserModel.find()
+    } catch (error) {
+      throw ApiError.BadRequest(error?.message || 'Произошла ошибка при поиске пользователей')
+    }
+  }
 }

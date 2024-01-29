@@ -22,4 +22,12 @@ export default new class UserController {
       next(error)
     }
   }
+
+  async getUsers (req: Request, res: Response, next: NextFunction) {
+    try {
+      return res.json(await UserService.getUsers(req.query.search as string))
+    } catch (error) {
+      next(error)
+    }
+  }
 }
