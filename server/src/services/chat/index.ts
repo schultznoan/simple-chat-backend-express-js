@@ -48,6 +48,22 @@ export default new class ChatService {
     }
   }
 
+  async getMessages (dialogId, limit = 5) {
+    try {
+      if (!dialogId) {
+        return await MessageModel
+          .find()
+          .limit(limit)
+      }
+
+      return await MessageModel
+        .find({ dialogId })
+        .limit(limit)
+    } catch ({ message }) {
+      throw ApiError.BadRequest(message || 'Произошла ошибка при получении списка сообщений')
+    }
+  }
+
   async getDialogs (dialogId) {
     try {
       if (dialogId) {

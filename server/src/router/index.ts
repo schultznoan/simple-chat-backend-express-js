@@ -13,6 +13,7 @@ router.post('/users/auth/signin', UserController.signin)
 router.post('/users/auth/signup', UserController.signup)
 
 router.get('/chat/dialog', authMiddleware, ChatController.getDialog)
+router.get('/chat/message', authMiddleware, ChatController.getMessages)
 router.post('/chat/message', authMiddleware, ChatController.createMessage)
 
 export default router
