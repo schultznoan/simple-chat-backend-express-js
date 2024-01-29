@@ -12,14 +12,5 @@ export default model('Dialog', new Schema({
     required: true,
     unique: true,
     ref: 'User'
-  },
-  title: {
-    type: String,
-    require: true
-  },
-  lastMessageId: {
-    type: Schema.Types.ObjectId,
-    require: true,
-    ref: 'Message'
   }
 }))
