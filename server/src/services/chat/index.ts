@@ -71,11 +71,23 @@ export default new class ChatService {
     }
   }
 
-  async getDialogs (dialogId: string): Promise<ChatDialogDto> {
+  async getDialogs (dialogId: string): Promise<ChatDialogDto | Array<ChatDialogDto>> {
     try {
-      const dialogs = dialogId ? await DialogModel.findById(dialogId) : await DialogModel.find()
+      if (dialogId) {
+        const dialog = await DialogModel.findById(dialogId)
+
+        return new ChatDialogDto(dialog)
+      }
+
+      const dialogs = await DialogModel.find()
+
+      const dialogDtos: Array<ChatDialogDto> = []
+
+      for (let i = 0; i < dialogs.length; i++) {
+        dialogDtos.push(new ChatDialogDto(dialogs[i]))
+      }
   
-      return new ChatDialogDto(dialogs)
+      return dialogDtos
     } catch ({ message }) {
       throw ApiError.BadRequest(message || 'Произошла ошибка при получении списка диалогов')
     }

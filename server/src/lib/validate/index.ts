@@ -53,7 +53,7 @@ export function validateForm (form: Record<string, unknown>): Record<string, str
 
     const result = validateKey.func(form[key])
 
-    if (!result) {
+    if (!result || !form[key]) {
       errors[key] = validateKey.errorMessage
     }
   }
