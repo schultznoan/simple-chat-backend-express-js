@@ -1,8 +1,8 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
-import router from './router'
-import errorMiddleware from './middlewares/error'
+import router from './router/index'
+import errorMiddleware from './middlewares/error/index'
 
 dotenv.config()
 

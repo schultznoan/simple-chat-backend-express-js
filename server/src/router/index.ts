@@ -1,9 +1,13 @@
 import { Router } from 'express'
-import UserController from '../controllers/user'
+
+import UserController from '../controllers/user/index'
+import ChatController from '../controllers/chat/index'
+
+import authMiddleware from '../middlewares/auth/index'
 
 const router = Router()
 
-router.get('/users', UserController.getUsers)
+router.get('/users', authMiddleware, UserController.getUsers)
 router.get('/users/auth/refresh')
 router.post('/users/auth/signin', UserController.signin)
 router.post('/users/auth/signup', UserController.signup)
@@ -11,6 +15,6 @@ router.post('/users/auth/signup', UserController.signup)
 router.get('/chat/dialog')
 router.get('/chat/dialog/:id')
 router.post('/chat/dialog')
-router.post('/chat/message')
+router.post('/chat/message', authMiddleware, ChatController.createMessage)
 
 export default router
