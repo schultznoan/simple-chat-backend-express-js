@@ -9,9 +9,18 @@ import UserTokensService from './tokens/index'
 
 import UserDto from '../../dtos/user/index'
 
+import {
+  UserPayload,
+  UserResponse,
+} from './interface'
+
+import {
+  TokensResponse
+} from './tokens/interface'
+
 export default new class UserService {
-  async signup ({ fio, email, password }) {
-    const errors = validateForm({ fio, email, password })
+  async signup ({ fio, email, password }: UserPayload): Promise<UserResponse> {
+    const errors: Record<string, string> = validateForm({ fio, email, password })
 
     if (errors) {
       throw ApiError.BadRequest('Некорректный запрос', errors)
@@ -37,7 +46,7 @@ export default new class UserService {
     }
   }
 
-  async signin ({ email, password }) {
+  async signin ({ email, password }: UserPayload): Promise<UserResponse> {
     const errors = validateForm({ email, password })
 
     if (errors) {
@@ -51,7 +60,7 @@ export default new class UserService {
     }
 
     try {
-      const isEqualPasswords = await UserIdentificationService.comparePasswords({ userId: findedUser._id, currentPassword: password })
+      const isEqualPasswords: boolean = await UserIdentificationService.comparePasswords({ userId: findedUser._id, currentPassword: password })
 
       if (!isEqualPasswords) {
         throw ApiError.BadRequest('Неверный логин/пароль')
@@ -66,27 +75,33 @@ export default new class UserService {
     }
   }
 
-  async getUsers (query: string) {
+  async getUsers (query: string): Promise<Array<UserDto>> {
     try {
-      if (query) {
-        return await UserModel
+      const users = query
+        ? await UserModel
           .find({ fio: new RegExp(query, 'i') })
           .sort({ fio: 1 })
+        : await UserModel.find()
+
+      const userDtos: Array<UserDto> = []
+
+      for (let i = 0; i < users.length; i++) {
+        userDtos.push(new UserDto(users[i]))
       }
-  
-      return await UserModel.find()
+      
+      return userDtos
     } catch ({ message, errors }) {
       throw ApiError.BadRequest(message || 'Произошла ошибка при поиске пользователей')
     }
   }
 
-  async refresh (refreshToken: string) {
+  async refresh (refreshToken: string): Promise<TokensResponse> {
     try {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError()
       }
   
-      const userData = UserTokensService.validateToken(refreshToken, false)
+      const userData: Record<string, unknown> = UserTokensService.validateToken(refreshToken, false)
   
       if (!userData) {
         throw ApiError.UnauthorizedError()

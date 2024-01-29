@@ -17,7 +17,7 @@ export default new class UserController {
 
   async getMessages (req: Request, res: Response, next: NextFunction) {
     try {
-      return res.json(await ChatService.getMessages(req.query.dialogId))
+      return res.json(await ChatService.getMessages(req.query.dialogId as string))
     } catch (error) {
       next(error)
     }

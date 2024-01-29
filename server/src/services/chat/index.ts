@@ -8,8 +8,13 @@ import MessageDialogDto from '../../dtos/message/index'
 
 import { validateForm } from '../../lib/validate/index'
 
+import {
+  FindDialogPayload,
+  CreateMessagePayload
+} from './interface'
+
 export default new class ChatService {
-  async findDialog ({ dialogId, companionId, userId }) {
+  async findDialog ({ dialogId, companionId, userId }: FindDialogPayload): Promise<ChatDialogDto> {
     try {
       if (dialogId) {
         const dialog = await DialogModel.findById(dialogId)
@@ -25,15 +30,15 @@ export default new class ChatService {
     }
   }
   
-  async createMessage ({ userId, companionId, dialogId, text, isIncomingMessage = false }) {
+  async createMessage ({ userId, companionId, dialogId, text, isIncomingMessage = false }: CreateMessagePayload): Promise<MessageDialogDto> {
     try {
-      const errors = validateForm({ companionId, dialogId, text })
+      const errors: Record<string, string> = validateForm({ companionId, dialogId, text })
 
       if (errors) {
         throw ApiError.BadRequest('Некорректный запрос', errors)
       }
 
-      const dialog = await this.findDialog({ userId, companionId, dialogId })
+      const dialog: ChatDialogDto = await this.findDialog({ userId, companionId, dialogId })
 
       const message = await MessageModel.create({
         dialogId: dialog.id,
@@ -48,29 +53,29 @@ export default new class ChatService {
     }
   }
 
-  async getMessages (dialogId, limit = 5) {
+  async getMessages (dialogId: string, limit: number = 5): Promise<Array<MessageDialogDto>> {
     try {
-      if (!dialogId) {
-        return await MessageModel
-          .find()
-          .limit(limit)
+      const messages = await MessageModel
+        .find(dialogId ? { dialogId } : undefined)
+        .limit(limit)
+
+      const messagesDtos: Array<MessageDialogDto> = []
+
+      for (let i = 0; i < messages.length; i++) {
+        messagesDtos.push(new MessageDialogDto(messages[i]))
       }
 
-      return await MessageModel
-        .find({ dialogId })
-        .limit(limit)
+      return messagesDtos
     } catch ({ message }) {
       throw ApiError.BadRequest(message || 'Произошла ошибка при получении списка сообщений')
     }
   }
 
-  async getDialogs (dialogId) {
+  async getDialogs (dialogId: string): Promise<ChatDialogDto> {
     try {
-      if (dialogId) {
-        return await DialogModel.findById(dialogId)
-      }
+      const dialogs = dialogId ? await DialogModel.findById(dialogId) : await DialogModel.find()
   
-      return await DialogModel.find()
+      return new ChatDialogDto(dialogs)
     } catch ({ message }) {
       throw ApiError.BadRequest(message || 'Произошла ошибка при получении списка диалогов')
     }

@@ -5,6 +5,15 @@ import UserIdentificationModel from '../../../models/user/identification'
 import UserIdentificationDto from '../../../dtos/user/identification'
 import UserTokensService from '../tokens/index'
 
+import { TokensResponse } from '../tokens/interface'
+
+import {
+  SavePasswordPayload,
+  ComparePasswordPayload
+} from './interface'
+
+import { Types } from 'mongoose'
+
 export default new class UserIdentificationService {
   async generatePassword (password: string): Promise<string> {
     if (!password) {
@@ -14,7 +23,7 @@ export default new class UserIdentificationService {
     return await bcrypt.hash(password, 3)
   }
 
-  async save ({ id, email, password }) {
+  async save ({ id, email, password }: SavePasswordPayload): Promise<TokensResponse> {
     try {
       const { access, refresh } = UserTokensService.generateTokens({ id, email })
 
@@ -32,7 +41,7 @@ export default new class UserIdentificationService {
     }
   }
 
-  async getPassword (userId) {
+  async getPassword (userId: Types.ObjectId): Promise<string> {
     try {
       const userIdentification = await UserIdentificationModel.findOne({ userId })
 
@@ -46,7 +55,7 @@ export default new class UserIdentificationService {
     }
   }
 
-  async comparePasswords ({ userId, currentPassword }) {
+  async comparePasswords ({ userId, currentPassword }: ComparePasswordPayload): Promise<boolean> {
     try {
       return await bcrypt.compare(currentPassword, await this.getPassword(userId))
     } catch ({ message }) {

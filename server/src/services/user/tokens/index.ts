@@ -2,8 +2,14 @@ import jwt from 'jsonwebtoken'
 
 import ApiError from '../../../exceptions/error/index'
 
+import {
+  TokensResponse
+} from './interface'
+
+import UserDto from '../../../dtos/user/index'
+
 export default new class UserTokensService {
-  generateTokens (payload) {
+  generateTokens (payload: Record<string, unknown>): TokensResponse {
     return {
       access: jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
         expiresIn: `${process.env.JWT_ACCESS_MAX_AGE}s`
@@ -14,7 +20,7 @@ export default new class UserTokensService {
     }
   }
 
-  validateToken (token: string, isAccess: boolean = true) {
+  validateToken (token: string, isAccess: boolean = true): Record<string, unknown> {
     try {
       return jwt.verify(token, isAccess ? process.env.JWT_ACCESS_SECRET : process.env.JWT_REFRESH_SECRET)
     } catch (error) {
