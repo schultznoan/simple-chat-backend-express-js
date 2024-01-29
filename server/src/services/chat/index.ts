@@ -47,4 +47,16 @@ export default new class ChatService {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при создании сообщения')
     }
   }
+
+  async getDialogs (dialogId) {
+    try {
+      if (dialogId) {
+        return await DialogModel.findById(dialogId)
+      }
+  
+      return await DialogModel.find()
+    } catch (error) {
+      throw ApiError.BadRequest(error?.message || 'Произошла ошибка при получении списка диалогов')
+    }
+  }
 }
