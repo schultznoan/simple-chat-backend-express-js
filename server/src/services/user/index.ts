@@ -7,6 +7,8 @@ import UserModel from '../../models/user/index'
 import UserIdentificationService from './identification/index'
 import UserTokensService from './tokens/index'
 
+import UserDto from '../../dtos/user/index'
+
 export default new class UserService {
   async signup ({ fio, email, password }) {
     const errors = validateForm({ fio, email, password })
@@ -22,9 +24,14 @@ export default new class UserService {
     }
 
     try {
-      const { _id: id } = await UserModel.create({ fio, email })
+      const createdUser = await UserModel.create({ fio, email })
+      const userDto = new UserDto(createdUser)
+      const tokens = await UserIdentificationService.save({ id: userDto.id, email, password })
 
-      return await UserIdentificationService.save({ id, email, password })
+      return {
+        ...tokens,
+        user: userDto
+      }
     } catch (error) {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при регистрации пользователя')
     }
@@ -50,7 +57,10 @@ export default new class UserService {
         throw ApiError.BadRequest('Неверный логин/пароль')
       }
 
-      return UserTokensService.generateTokens({ id: findedUser._id, email })
+      return {
+        ...UserTokensService.generateTokens({ id: findedUser._id, email }),
+        user: new UserDto(findedUser)
+      }
     } catch (error) {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при авторизации пользователя')
     }
