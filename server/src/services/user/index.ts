@@ -30,7 +30,7 @@ export default new class UserService {
 
       return {
         ...tokens,
-        user: userDto
+        ...userDto
       }
     } catch (error) {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при регистрации пользователя')
@@ -59,7 +59,7 @@ export default new class UserService {
 
       return {
         ...UserTokensService.generateTokens({ id: findedUser._id, email }),
-        user: new UserDto(findedUser)
+        ...new UserDto(findedUser)
       }
     } catch (error) {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при авторизации пользователя')
@@ -77,6 +77,24 @@ export default new class UserService {
       return await UserModel.find()
     } catch (error) {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при поиске пользователей')
+    }
+  }
+
+  async refresh (refreshToken: string) {
+    try {
+      if (!refreshToken) {
+        throw ApiError.UnauthorizedError()
+      }
+  
+      const userData = UserTokensService.validateToken(refreshToken, false)
+  
+      if (!userData) {
+        throw ApiError.UnauthorizedError()
+      }
+
+      return UserTokensService.generateTokens(userData)
+    } catch (error) {
+      throw ApiError.BadRequest(error?.message || 'Произошла ошибка при обновлении токена')
     }
   }
 }

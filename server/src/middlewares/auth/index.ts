@@ -33,7 +33,7 @@ export default function (req: Request, _res: Response, next: NextFunction) {
       return
     }
 
-    const userData = UserTokensService.validateAccessToken(accessToken)
+    const userData = UserTokensService.validateToken(accessToken)
 
     req.user = userData
 

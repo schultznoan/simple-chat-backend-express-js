@@ -8,7 +8,7 @@ import authMiddleware from '../middlewares/auth/index'
 const router = Router()
 
 router.get('/users', authMiddleware, UserController.getUsers)
-router.get('/users/auth/refresh')
+router.get('/users/auth/refresh', authMiddleware, UserController.refresh)
 router.post('/users/auth/signin', UserController.signin)
 router.post('/users/auth/signup', UserController.signup)
 

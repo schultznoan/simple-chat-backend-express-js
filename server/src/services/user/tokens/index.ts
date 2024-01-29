@@ -14,9 +14,9 @@ export default new class UserTokensService {
     }
   }
 
-  validateAccessToken (token: string) {
+  validateToken (token: string, isAccess: boolean = true) {
     try {
-      return jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+      return jwt.verify(token, isAccess ? process.env.JWT_ACCESS_SECRET : process.env.JWT_REFRESH_SECRET)
     } catch (error) {
       throw ApiError.UnauthorizedError()
     }

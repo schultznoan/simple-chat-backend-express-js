@@ -3,16 +3,18 @@ import {
   Response,
   NextFunction
 } from 'express'
+import { StatusCodes } from 'http-status-codes'
 
 import UserService from '../../services/user/index'
+
+import cookieHandler from '../../lib/handlers/cookie'
 
 export default new class UserController {
   async signup (req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = await UserService.signup(req.body || {})
+      const { access, refresh, ...userData } = await UserService.signup(req.body || {})
 
-      res.cookie('access_token', userData.access, { maxAge: +process.env.JWT_ACCESS_MAX_AGE, httpOnly: true })
-      res.cookie('refresh_token', userData.refresh, { maxAge: +process.env.JWT_REFRESH_MAX_AGE, httpOnly: true })
+      cookieHandler(res, { access, refresh })
     
       return res.json(userData)
     } catch (error) {
@@ -22,10 +24,9 @@ export default new class UserController {
 
   async signin (req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = await UserService.signin(req.body || {})
+      const { access, refresh, ...userData } = await UserService.signin(req.body || {})
 
-      res.cookie('access_token', userData.access, { maxAge: +process.env.JWT_ACCESS_MAX_AGE, httpOnly: true })
-      res.cookie('refresh_token', userData.refresh, { maxAge: +process.env.JWT_REFRESH_MAX_AGE, httpOnly: true })
+      cookieHandler(res, { access, refresh })
 
       return res.json(userData) 
     } catch (error) {
@@ -36,6 +37,18 @@ export default new class UserController {
   async getUsers (req: Request, res: Response, next: NextFunction) {
     try {
       return res.json(await UserService.getUsers(req.query.search as string))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async refresh (req: Request, res: Response, next: NextFunction) {
+    try {
+      const { access, refresh } = await UserService.refresh(req.cookies.refresh)
+
+      cookieHandler(res, { access, refresh })
+
+      return res.status(StatusCodes.NO_CONTENT).json()
     } catch (error) {
       next(error)
     }
