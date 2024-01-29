@@ -4,9 +4,8 @@ import ApiError from '../../exceptions/error/index'
 
 import UserModel from '../../models/user/index'
 
-import UserIdentificationService from './identification'
-
-import UsernDto from '../../dtos/user/index'
+import UserIdentificationService from './identification/index'
+import UserTokensService from './tokens/index'
 
 export default new class UserService {
   async signup ({ fio, email, password }) {
@@ -51,7 +50,7 @@ export default new class UserService {
         throw ApiError.BadRequest('Неверный логин/пароль')
       }
 
-      return UserIdentificationService.generateTokens({ id: findedUser._id, email })
+      return UserTokensService.generateTokens({ id: findedUser._id, email })
     } catch (error) {
       throw ApiError.BadRequest(error?.message || 'Произошла ошибка при авторизации пользователя')
     }
